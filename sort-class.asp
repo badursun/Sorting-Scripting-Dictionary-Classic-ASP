@@ -13,6 +13,8 @@ Class sortk
 	' Class Init
 	'-----------------------------------
 	Private Sub Class_Initialize()
+		On Error Resume Next
+
 	End Sub
 
 	' Class Terminate
@@ -22,11 +24,17 @@ Class sortk
 
 	' Grab Forms Data And Add Dictionary
 	'-----------------------------------
-	Public Property Get GrabForms()
-		Set d = Server.CreateObject("Scripting.Dictionary")
-			For Each Item in Request.Form
-				d.Add Item, Request.Form(Item)
-			Next 
+	Public Property Get GrabForms(dictName)
+		If Not TypeName(dictName) = "Dictionary" Then
+			Set d = Server.CreateObject("Scripting.Dictionary")
+		Else 
+			Set d = dictName
+		End If
+
+		For Each Item in Request.Form
+			d.Add Item, Request.Form(Item)
+		Next 
+
 		Set GrabForms = d 
 		Set d = Nothing
 	End Property
@@ -89,5 +97,22 @@ Class sortk
 		'Call SortArray(aTemp)
 		Call PrintDictionary(objDict, aTemp)
 	End Sub
+
+	'
+	'-----------------------------------
+	Public Property Get CreateDictionary()
+		Set CreateDictionary = Server.CreateObject("Scripting.Dictionary")
+	End Property
+
+	'
+	'-----------------------------------
+    Public Property Get AddData(DictName, DictKey, DictValue)
+		If Not TypeName(DictName) = "Dictionary" Then
+			Call Err.Raise("1004", "First create Dictionary", "You cannot assign without creating a dictionary. First Set variable by calling CreateDictionary() ")
+		End If
+        'Set Data = Server.CreateObject("Scripting.Dictionary")
+        DictName.Add DictKey, DictValue
+
+    End Property
 End Class
 %>
